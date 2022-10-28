@@ -6,7 +6,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Config\Repository;
 use Illuminate\Database\Eloquent\Model;
 
-class DbView extends \Illuminate\View\View implements ArrayAccess, Renderable {
+class BladeView extends \Illuminate\View\View implements ArrayAccess, Renderable {
 
     protected $content_field = null;
 
@@ -41,7 +41,7 @@ class DbView extends \Illuminate\View\View implements ArrayAccess, Renderable {
         if (!is_null($content_field)) {
             $this->content_field = $content_field;
         } else {
-            $this->content_field = $this->config->get('dbview.model_default_field');
+            $this->content_field = $this->config->get('orbtall.blade.compiler.model_default_field');
         }
 
         return $this;
@@ -49,7 +49,7 @@ class DbView extends \Illuminate\View\View implements ArrayAccess, Renderable {
 
     /**
      * @param  string $content_field
-     * @return DbView
+     * @return BladeView
      */
     public function field($content_field)
     {
@@ -74,9 +74,9 @@ class DbView extends \Illuminate\View\View implements ArrayAccess, Renderable {
         // done rendering all views so that there is nothing left hanging over when
         // anothoer view is rendered in the future by the application developers.
         // Before flushing, check Laravel version for correct method use
-        if ( version_compare(app()->version(), '5.4.0') >= 0 )
+        if ( version_compare(app()->version(), '5.4.0') >= 0 ) 
             View::flushStateIfDoneRendering();
-        else
+        else 
             View::flushSectionsIfDoneRendering();
 
         return $response ?: $contents;
@@ -106,7 +106,7 @@ class DbView extends \Illuminate\View\View implements ArrayAccess, Renderable {
 
     protected function getContents()
     {
-        $field                = $this->config->get('dbview.model_property');
+        $field                = $this->config->get('orbtall.blade.compiler.model_property');
         $this->path->{$field} = $this->content_field;
 
         return parent::getContents();
@@ -153,6 +153,6 @@ class DbView extends \Illuminate\View\View implements ArrayAccess, Renderable {
     {
         return $this->with($key, View::make($view, $data));
     }
-
+    
 }
 

@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Facade;
 
-class DbView extends Facade {
+class BladeView extends Facade {
 
 	/**
 	 * Get the registered name of the component.
@@ -10,7 +10,7 @@ class DbView extends Facade {
 	 * @return string
 	 */
 	protected static function getFacadeAccessor() {
-        return 'dbview';
+        return 'bladeview';
     }
 
 }

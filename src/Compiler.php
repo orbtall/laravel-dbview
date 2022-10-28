@@ -37,7 +37,7 @@ class Compiler extends BladeCompiler implements CompilerInterface {
         }
 
         // Defaults to '__db_blade_compiler_content_field' property
-        $property = $this->config->get('dbview.model_property');
+        $property = $this->config->get('orbtall.blade.compiler.model_property');
         // Defaults to 'contents' column
         $column = $path->{$property};
         // Grab the column contents
@@ -65,7 +65,7 @@ class Compiler extends BladeCompiler implements CompilerInterface {
          *
          * e.g db_table_name_id_4
          */
-        $field = $this->config->get('dbview.model_property');
+        $field = $this->config->get('orbtall.blade.compiler.model_property');
         $path  = 'db_' . $model->getTable() . '_' . $model->{$field} . '_';
         if (is_null($model->primaryKey)) {
             $path .= $model->id;
@@ -88,7 +88,7 @@ class Compiler extends BladeCompiler implements CompilerInterface {
      */
     public function isExpired($path)
     {
-        if (!$this->config->get('dbview.cache')) {
+        if (!$this->config->get('orbtall.blade.compiler.cache')) {
             return true;
         }
         $compiled = $this->getCompiledPath($path);
