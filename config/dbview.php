@@ -1,5 +1,6 @@
 <?php
 
+
 return array(
 
 	/**
@@ -15,5 +16,4 @@ return array(
 	'model_default_field' => 'content',
 
     'cache' => false
-
 );

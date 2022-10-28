@@ -1,4 +1,4 @@
-<?php namespace Orbtall\Blade\Compiler;
+<?php namespace Orbtall\DbBladeCompiler;
 
 use View, Closure, ArrayAccess;
 use Illuminate\Contracts\Support\Arrayable;
@@ -6,7 +6,8 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Config\Repository;
 use Illuminate\Database\Eloquent\Model;
 
-class BladeView extends \Illuminate\View\View implements ArrayAccess, Renderable {
+class DbView extends \Illuminate\View\View implements ArrayAccess, Renderable
+{
 
     protected $content_field = null;
 
@@ -16,10 +17,10 @@ class BladeView extends \Illuminate\View\View implements ArrayAccess, Renderable
     /**
      * DbView constructor.
      *
-     * @param Repository            $config
-     * @param CompilerEngine $engine
+     * @param Repository $config
+     * @param DbBladeCompilerEngine $engine
      */
-    public function __construct(Repository $config, CompilerEngine $engine)
+    public function __construct(Repository $config, DbBladeCompilerEngine $engine)
     {
         $this->config = $config;
         $this->engine = $engine;
@@ -28,10 +29,10 @@ class BladeView extends \Illuminate\View\View implements ArrayAccess, Renderable
     /**
      * Get a evaluated view contents for the given view.
      *
-     * @param  Model  $model
-     * @param  array  $data
-     * @param  array  $mergeData
-     * @param  string $content_field
+     * @param Model $model
+     * @param array $data
+     * @param array $mergeData
+     * @param string $content_field
      * @return DbView
      */
     public function make(Model $model, $data = array(), $mergeData = array(), $content_field = null)
@@ -41,15 +42,15 @@ class BladeView extends \Illuminate\View\View implements ArrayAccess, Renderable
         if (!is_null($content_field)) {
             $this->content_field = $content_field;
         } else {
-            $this->content_field = $this->config->get('orbtall.blade.compiler.model_default_field');
+            $this->content_field = $this->config->get('dbview.model_default_field');
         }
 
         return $this;
     }
 
     /**
-     * @param  string $content_field
-     * @return BladeView
+     * @param string $content_field
+     * @return DbView
      */
     public function field($content_field)
     {
@@ -61,7 +62,7 @@ class BladeView extends \Illuminate\View\View implements ArrayAccess, Renderable
     /**
      * Get the string contents of the view.
      *
-     * @param  callable $callback
+     * @param callable $callback
      * @return string
      */
     public function render(callable $callback = null)
@@ -74,9 +75,9 @@ class BladeView extends \Illuminate\View\View implements ArrayAccess, Renderable
         // done rendering all views so that there is nothing left hanging over when
         // anothoer view is rendered in the future by the application developers.
         // Before flushing, check Laravel version for correct method use
-        if ( version_compare(app()->version(), '5.4.0') >= 0 ) 
+        if (version_compare(app()->version(), '5.4.0') >= 0)
             View::flushStateIfDoneRendering();
-        else 
+        else
             View::flushSectionsIfDoneRendering();
 
         return $response ?: $contents;
@@ -106,7 +107,7 @@ class BladeView extends \Illuminate\View\View implements ArrayAccess, Renderable
 
     protected function getContents()
     {
-        $field                = $this->config->get('orbtall.blade.compiler.model_property');
+        $field = $this->config->get('dbview.model_property');
         $this->path->{$field} = $this->content_field;
 
         return parent::getContents();
@@ -115,7 +116,7 @@ class BladeView extends \Illuminate\View\View implements ArrayAccess, Renderable
     /**
      * Parse the given data into a raw array.
      *
-     * @param  mixed $data
+     * @param mixed $data
      * @return array
      */
     protected function parseData($data)
@@ -144,15 +145,59 @@ class BladeView extends \Illuminate\View\View implements ArrayAccess, Renderable
     /**
      * Add a view instance to the view data.
      *
-     * @param  string $key
-     * @param  string $view
-     * @param  array  $data
+     * @param string $key
+     * @param string $view
+     * @param array $data
      * @return \Illuminate\View\View
      */
     public function nest($key, $view, array $data = array())
     {
         return $this->with($key, View::make($view, $data));
     }
-    
+
+    /**
+     * Determine if a piece of data is bound.
+     *
+     * @param string $key
+     * @return bool
+     */
+    public function offsetExists($key): bool
+    {
+        return array_key_exists($key, $this->data);
+    }
+
+    /**
+     * Get a piece of bound data to the view.
+     *
+     * @param string $key
+     * @return mixed
+     */
+    public function offsetGet($key): mixed
+    {
+        return $this->data[$key];
+    }
+
+    /**
+     * Set a piece of data on the view.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return void
+     */
+    public function offsetSet($key, $value): void
+    {
+        $this->with($key, $value);
+    }
+
+    /**
+     * Unset a piece of data from the view.
+     *
+     * @param string $key
+     * @return void
+     */
+    public function offsetUnset($key): void
+    {
+        unset($this->data[$key]);
+    }
 }
 

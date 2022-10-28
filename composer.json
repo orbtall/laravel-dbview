@@ -1,18 +1,31 @@
 {
-    "name": "orbtall/blade-compiler",
-    "type": "library",
+    "name": "orbtall/laravel-dbview",
+    "description": "Render Blade templates from Eloquent Model Fields",
+    "keywords": ["laravel", "blade", "compiler", "eloquent", "model"],
     "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "Orbtall\\Blade\\Compiler\\": "src/"
-        }
-    },
     "authors": [
         {
             "name": "Orbtall",
             "email": "developer@orbtall.com"
         }
     ],
-    "minimum-stability": "dev",
-    "require": {}
+    "require": {
+        "php": ">=7.1"
+    },
+    "autoload": {
+        "psr-0": {
+            "Orbtall\\DbBladeCompiler\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Orbtall\\DbBladeCompiler\\DbBladeCompilerServiceProvider"
+            ],
+            "aliases": {
+                "DbView": "Orbtall\\DbBladeCompiler\\Facades\\DbView"
+            }
+        }
+    }
 }
